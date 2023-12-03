@@ -1,0 +1,44 @@
+version: "3.9"
+
+services:
+  a3data_database:
+    build:
+      context: ./database
+      dockerfile: Dockerfile
+    image: a3data_database:${VERSION_DATABASE}
+    container_name: a3data_database
+    restart: always
+    volumes:
+      - ${PATH_TO_DATABASE}/a3data_database:/var/lib/postgresql/data
+      - ./database/deploy/${VERSION_DATABASE}.sql:/docker-entrypoint-initdb.d/init.sql
+    env_file: ./database/database.conf
+    ports:
+      - 5432:5432
+    networks:
+      - a3data_network
+
+  a3data_webserver:
+    build:
+      context: ./webserver
+      dockerfile: Dockerfile
+    image: a3data_webserver:${VERSION_WEBSERVER}
+    depends_on:
+      - a3data_database
+    container_name: a3data_webserver
+    restart: always
+    volumes:
+      - ./webserver:/app
+    env_file: ./webserver/webserver.conf
+    ports:
+      - 8090:8090
+    networks:
+      - a3data_network
+
+networks:
+  a3data_network:
+    driver: bridge
+    name: a3data_network
+
+volumes:
+  database_a3data:
+    driver: local
