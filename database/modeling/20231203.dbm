@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+CAUTION: Do not modify this file unless you know what you are doing.
+ Unexpected results may occur if the code is changed deliberately.
+-->
+<dbmodel pgmodeler-ver="0.9.4" use-changelog="false" last-position="0,0" last-zoom="1" max-obj-count="4"
+	 default-schema="public" default-owner="postgres"
+	 layers="Default layer"
+	 active-layers="0"
+	 layer-name-colors="#000000"
+	 layer-rect-colors="#b4b4b4"
+	 show-layer-names="false" show-layer-rects="false">
+<database name="a3data" is-template="false" allow-conns="true" append-at-eod="true">
+	<appended-sql><![CDATA[CREATE EXTENSION pgcrypto
+WITH SCHEMA public;
+
+DO $$ 
+ --Substitua SECRET_KEY na próxima linha pela chave de criptografia utilizada no ambiente, em seguida descomente-a.
+ DECLARE secret text := '123456';
+ begin
+ update public."user" set "password" = public.PGP_SYM_ENCRYPT(public."user".password, secret);
+END $$;]]></appended-sql>
+</database>
+
+<schema name="public" layers="0" fill-color="#e1e1e1" sql-disabled="true">
+</schema>
+
+<table name="user" layers="0" collapse-mode="2" max-obj-count="4" z-value="0">
+	<schema name="public"/>
+	<position x="200" y="240"/>
+	<column name="id" not-null="true">
+		<type name="bigserial" length="0"/>
+	</column>
+	<column name="name" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="email" not-null="true">
+		<type name="varchar" length="50"/>
+	</column>
+	<column name="password" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="user_pk" type="pk-constr" table="public.&quot;user&quot;">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+	<initial-data>
+<![CDATA[id•name•email•password⸣
+1•Administrador•admin@email.com•123456]]>
+	</initial-data>
+</table>
+
+<table name="session" layers="0" collapse-mode="2" max-obj-count="4" z-value="0">
+	<schema name="public"/>
+	<position x="600" y="40"/>
+	<column name="id" not-null="true">
+		<type name="serial" length="55"/>
+	</column>
+	<column name="token" not-null="true">
+		<type name="varchar" length="50"/>
+	</column>
+	<column name="expiration" not-null="true">
+		<type name="timestamp" length="0"/>
+	</column>
+	<constraint name="authentication_pk" type="pk-constr" table="public.session">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+
+	<customidxs object-type="column">
+		<object name="id_user" index="3"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="user_fk" index="1"/>
+	</customidxs>
+</table>
+
+<table name="patient" layers="0" collapse-mode="2" max-obj-count="6" z-value="0">
+	<schema name="public"/>
+	<position x="520" y="360"/>
+	<column name="id" not-null="true">
+		<type name="varchar" length="36"/>
+	</column>
+	<column name="birthdate" not-null="true">
+		<type name="date" length="0"/>
+	</column>
+	<column name="ssn" not-null="true">
+		<type name="varchar" length="11"/>
+	</column>
+	<column name="first_name" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="last_name" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="ssn_uq" type="uq-constr" table="public.patient">
+		<columns names="ssn" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="patient_pk" type="pk-constr" table="public.patient">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="condition" layers="0" collapse-mode="2" max-obj-count="6" z-value="0">
+	<schema name="public"/>
+	<position x="1040" y="380"/>
+	<column name="id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="start" not-null="true">
+		<type name="date" length="0"/>
+	</column>
+	<column name="stop">
+		<type name="date" length="0"/>
+	</column>
+	<column name="description" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="condition_pk" type="pk-constr" table="public.condition">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<relationship name="patient_has_many_condition" type="rel1n" layers="0"
+	 src-col-pattern="patient"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#f559fa"
+	 src-table="public.patient"
+	 dst-table="public.condition"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="user_has_many_session" type="rel1n" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#fe3c61"
+	 src-table="public.&quot;user&quot;"
+	 dst-table="public.session"
+	 src-required="true" dst-required="false">
+	<label ref-type="name-label">
+		<position x="120.404" y="26.363"/>
+	</label>
+</relationship>
+
+<constraint name="session_id_user_unique" type="uq-constr" table="public.session">
+	<columns names="id_user" ref-type="src-columns"/>
+</constraint>
+
+<index name="authentication_token_index" table="public.session"
+	 concurrent="false" unique="false" fast-update="false" buffering="false"
+	 index-type="btree" factor="0">
+		<idxelement use-sorting="false">
+			<column name="token"/>
+		</idxelement>
+</index>
+
+<index name="authentication_id_user_index" table="public.session"
+	 concurrent="false" unique="false" fast-update="false" buffering="false"
+	 index-type="btree" factor="0">
+		<idxelement use-sorting="false">
+			<column name="id_user"/>
+		</idxelement>
+</index>
+
+</dbmodel>

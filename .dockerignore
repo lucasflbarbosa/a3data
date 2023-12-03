@@ -1,0 +1,6 @@
+webserver/webserver_venv
+__pycache__
+.mypy_cache
+.vscode
+docker_conf_db
+a3data_db
