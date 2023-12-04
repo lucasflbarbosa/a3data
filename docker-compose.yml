@@ -15,7 +15,19 @@ services:
     ports:
       - 5432:5432
     networks:
-      - a3data_network
+      - elastic
+  
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.15.0
+    environment:
+      - discovery.type=single-node
+    container_name: elasticsearch
+    restart: always
+    ports:
+      - 9200:9200
+      - 9300:9300
+    networks:
+      - elastic
 
   a3data_webserver:
     build:
@@ -23,7 +35,7 @@ services:
       dockerfile: Dockerfile
     image: a3data_webserver:${VERSION_WEBSERVER}
     depends_on:
-      - a3data_database
+      - elasticsearch
     container_name: a3data_webserver
     restart: always
     volumes:
@@ -32,12 +44,11 @@ services:
     ports:
       - 8090:8090
     networks:
-      - a3data_network
+      - elastic
 
 networks:
-  a3data_network:
+  elastic:
     driver: bridge
-    name: a3data_network
 
 volumes:
   database_a3data:
