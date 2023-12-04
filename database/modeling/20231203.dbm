@@ -80,8 +80,8 @@ END $$;]]></appended-sql>
 	<column name="id" not-null="true">
 		<type name="varchar" length="36"/>
 	</column>
-	<column name="birthdate" not-null="true">
-		<type name="date" length="0"/>
+	<column name="birthplace" not-null="true">
+		<type name="text" length="0"/>
 	</column>
 	<column name="ssn" not-null="true">
 		<type name="varchar" length="11"/>
@@ -99,35 +99,6 @@ END $$;]]></appended-sql>
 		<columns names="id" ref-type="src-columns"/>
 	</constraint>
 </table>
-
-<table name="condition" layers="0" collapse-mode="2" max-obj-count="6" z-value="0">
-	<schema name="public"/>
-	<position x="1040" y="380"/>
-	<column name="id" not-null="true">
-		<type name="serial" length="0"/>
-	</column>
-	<column name="start" not-null="true">
-		<type name="date" length="0"/>
-	</column>
-	<column name="stop">
-		<type name="date" length="0"/>
-	</column>
-	<column name="description" not-null="true">
-		<type name="text" length="0"/>
-	</column>
-	<constraint name="condition_pk" type="pk-constr" table="public.condition">
-		<columns names="id" ref-type="src-columns"/>
-	</constraint>
-</table>
-
-<relationship name="patient_has_many_condition" type="rel1n" layers="0"
-	 src-col-pattern="patient"
-	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
-	 src-fk-pattern="{st}_fk"
-	 custom-color="#f559fa"
-	 src-table="public.patient"
-	 dst-table="public.condition"
-	 src-required="false" dst-required="false"/>
 
 <relationship name="user_has_many_session" type="rel1n" layers="0"
 	 src-col-pattern="{sc}_{st}"

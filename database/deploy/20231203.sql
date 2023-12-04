@@ -9,7 +9,7 @@
 -- 
 -- object: a3data | type: DATABASE --
 -- DROP DATABASE IF EXISTS a3data;
-CREATE DATABASE a3data;
+-- CREATE DATABASE a3data;
 -- ddl-end --
 
 
@@ -42,32 +42,13 @@ CREATE TABLE public.session (
 -- DROP TABLE IF EXISTS public.patient CASCADE;
 CREATE TABLE public.patient (
 	id varchar(36) NOT NULL,
-	birthdate date NOT NULL,
+	birthplace text NOT NULL,
 	ssn varchar(11) NOT NULL,
 	first_name text NOT NULL,
 	last_name text NOT NULL,
 	CONSTRAINT ssn_uq UNIQUE (ssn),
 	CONSTRAINT patient_pk PRIMARY KEY (id)
 );
--- ddl-end --
-
--- object: public.condition | type: TABLE --
--- DROP TABLE IF EXISTS public.condition CASCADE;
-CREATE TABLE public.condition (
-	id serial NOT NULL,
-	start date NOT NULL,
-	stop date,
-	description text NOT NULL,
-	patient varchar(36),
-	CONSTRAINT condition_pk PRIMARY KEY (id)
-);
--- ddl-end --
-
--- object: patient_fk | type: CONSTRAINT --
--- ALTER TABLE public.condition DROP CONSTRAINT IF EXISTS patient_fk CASCADE;
-ALTER TABLE public.condition ADD CONSTRAINT patient_fk FOREIGN KEY (patient)
-REFERENCES public.patient (id) MATCH FULL
-ON DELETE SET NULL ON UPDATE CASCADE;
 -- ddl-end --
 
 -- object: user_fk | type: CONSTRAINT --

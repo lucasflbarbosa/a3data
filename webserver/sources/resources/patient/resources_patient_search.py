@@ -22,8 +22,6 @@ logger.disabled = False if os.environ.get("LOG", "True") == "True" else True
 router = APIRouter(prefix='/api/resources/patient/search',
                    tags=['/api/resources/patient'])
 
-DEFINE_SIZE_LIST: int = 100
-
 
 @router.get('')
 def resources_patient_search(search: Optional[str] = Query(None,

@@ -8,7 +8,9 @@ from fastapi.responses import JSONResponse
 from utils import common_essential_functions as response
 
 from sources.resources.user import resources_user_login
-from sources.resources.patient import resources_patient_search
+from sources.resources.patient import (resources_patient_search, resources_patient_create,
+                                       resources_patient_list, resources_patient_update,
+                                       resources_patient_delete)
 
 
 __author__ = "Lucas Felix"
@@ -73,6 +75,10 @@ app.include_router(resources_user_login.router)
 
 # Endpoints /resources/patient
 app.include_router(resources_patient_search.router)
+app.include_router(resources_patient_create.router)
+app.include_router(resources_patient_list.router)
+app.include_router(resources_patient_update.router)
+app.include_router(resources_patient_delete.router)
 
 
 @app.get("/health", tags=['Health'])
