@@ -1,10 +1,65 @@
+import os
 import datetime
 import pytz
+import logging
+import pandas as pd
+from elasticsearch import Elasticsearch, helpers
+from elasticsearch.exceptions import ElasticsearchException
+from elasticsearch.helpers.errors import BulkIndexError
 
 __author__ = "Lucas Felix"
 __date__ = "03/12/2023"
-
 __version__ = open("version").readline()
+
+
+logger = logging.getLogger('elasticsearch')
+logger.setLevel(logging.INFO)
+# flag que permite ativar/desativar log
+logger.disabled = False if os.environ.get("LOG", "True") == "True" else True
+
+
+def create_indexes_elasticsearch(index_name: str, path_csv: str):
+    es = Elasticsearch([{'host': 'elasticsearch', 'port': 9200}])
+
+    try:
+        if es.ping():
+            logger.info("Conexão bem-sucedida!")
+        else:
+            logger.info("Não foi possível estabelecer a conexão.")
+    except ElasticsearchException as e:
+        logger.info(f"Erro de conexão: {e}")
+
+    if not es.indices.exists(index=index_name):
+
+        df = pd.read_csv(path_csv)
+
+        # Substituir valores 'nan' por undefined no DataFrame
+        df = df.where(pd.notna(df), "undefined")
+
+        # Converter todas as colunas para o tipo str
+        df = df.astype(str)
+
+        data_to_index = df.to_dict(orient='records')
+
+        actions = [
+                {
+                    "_op_type": "index",  # Operação de indexação
+                    "_index": index_name,
+                    "_source": data
+                }
+                for data in data_to_index
+            ]
+
+        # Usar a função helpers.bulk para indexar em lote
+        try:
+            helpers.bulk(es, actions)
+        except BulkIndexError as e:
+            for erro in e.errors:
+                logger.info(f"Erro no documento: {erro}")
+
+        logger.info(f"Index {index_name} criado!")
+    else:
+        logger.info(f"Index {index_name} ja existe!")
 
 
 def get_timestamp():

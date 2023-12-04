@@ -8,6 +8,7 @@ from fastapi.responses import JSONResponse
 from utils import common_essential_functions as response
 
 from sources.resources.user import resources_user_login
+from sources.resources.patient import resources_patient_search
 
 
 __author__ = "Lucas Felix"
@@ -35,6 +36,10 @@ paths_description = [
     {
         "name": '/api/resources/user',
         "description": "Grupo de Endpoints para o tratamento de Usuários."
+    },
+    {
+        "name": '/api/resources/patient',
+        "description": "Grupo de Endpoints para o tratamento de dados de Pacientes."
     }
 ]
 
@@ -66,6 +71,9 @@ async def validation_exception_handler(request, exc):
 # Endpoints /resources/user
 app.include_router(resources_user_login.router)
 
+# Endpoints /resources/patient
+app.include_router(resources_patient_search.router)
+
 
 @app.get("/health", tags=['Health'])
 def health():
@@ -78,8 +86,11 @@ def health():
 
 if __name__ == "__main__":
     logging.info("Starting Webserver in PORT " + str(os.environ.get("SERVER_PORT", 8090)))
+    response.create_indexes_elasticsearch('patients_csv', 'synthea_database/patients.csv')
+    # response.create_indexes_elasticsearch('conditions_csv', '/synthea_database/conditions.csv')
     uvicorn.run(
         "main:app",
+        host="0.0.0.0",
         port=int(os.environ.get("SERVER_PORT", 8090)),
         log_level=os.environ.get("SERVER_LOG_LEVEL", "info"),
         reload=True

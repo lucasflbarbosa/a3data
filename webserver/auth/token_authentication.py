@@ -16,12 +16,11 @@ logger.disabled = False if os.environ.get("LOG", "False") == "True" else True
 
 
 class Token:
-    def __init__(self, conn, id_user=None, token=None, identifier_profile=None):
+    def __init__(self, conn, id_user=None, token=None):
         self.__connection = conn
         self.__validation = None
         self.token = token
         self.id_user = id_user
-        self.identifier_profile = identifier_profile
         logger.info("Elemento token iniciado...")
 
     def authentication(self):
@@ -52,9 +51,7 @@ class Token:
             UPDATE public."session"
             SET expiration = (now() + INTERVAL '01:00:00')
             WHERE "token" = '{self.token}' and expiration > now()
-            RETURNING "token", id_user, (SELECT identifier_profile
-                                         FROM public."user"
-                                         WHERE id = id_user) """
+            RETURNING "token", id_user """
         cursor.execute(qry)
         result = cursor.fetchone()
 
@@ -63,7 +60,6 @@ class Token:
         else:
             self.token = result[0]
             self.id_user = result[1]
-            self.identifier_profile = result[2]
 
             if self.token is None or self.id_user is None:
                 raise PermissionError("Sessao nao encontrada")
