@@ -86,6 +86,7 @@ set PATH_TO_DATABASE=$(pwd) && set VERSION_DATABASE=$(cat database/version) && s
 - O desafio técnico implementou todas espeficiações, incluindo o elasticsearch;
 - Existem 3 containers (database, elasticsearch, webserver)
 - Após subir os containers é possível acessar e manipular os endpoints (Swagger) através do browser no endereço: (http://localhost:8090/documentation)
+  - Obs: Esperar alguns segundos para acessar o Swagger, pois o container webserver só sobe quando o container do elasticsearch estiver totalmente configurado.
 - O usuário para poder manipular os endpoints é:
   - Login: admin@email.com
   - Senha: 123456
