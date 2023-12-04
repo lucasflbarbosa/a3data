@@ -60,8 +60,34 @@ def resources_patient_search(search: Optional[str] = Query(None,
 
         consulta = {
             "query": {
-                "match": {
-                    "Id": "2dd8887d-6ce5-8c2b-0358-176a5c99cbac"
+                "bool": {
+                    "should": [
+                        {"wildcard": {"Id": f"*{search}*"}},
+                        {"wildcard": {"SSN": f"*{search}*"}},
+                        {"wildcard": {"DRIVERS": f"*{search}*"}},
+                        {"wildcard": {"PASSPORT": f"*{search}*"}},
+                        {"wildcard": {"PREFIX": f"*{search}*"}},
+                        {"wildcard": {"FIRST": f"*{search}*"}},
+                        {"wildcard": {"LAST": f"*{search}*"}},
+                        {"wildcard": {"SUFFIX": f"*{search}*"}},
+                        {"wildcard": {"MAIDEN": f"*{search}*"}},
+                        {"wildcard": {"MARITAL": f"*{search}*"}},
+                        {"wildcard": {"RACE": f"*{search}*"}},
+                        {"wildcard": {"ETHNICITY": f"*{search}*"}},
+                        {"wildcard": {"GENDER": f"*{search}*"}},
+                        {"wildcard": {"BIRTHPLACE": f"*{search}*"}},
+                        {"wildcard": {"ADDRESS": f"*{search}*"}},
+                        {"wildcard": {"CITY": f"*{search}*"}},
+                        {"wildcard": {"STATE": f"*{search}*"}},
+                        {"wildcard": {"COUNTRY": f"*{search}*"}},
+                        {"wildcard": {"FIPS": f"*{search}*"}},
+                        {"wildcard": {"ZIP": f"*{search}*"}},
+                        {"wildcard": {"LAT": f"*{search}*"}},
+                        {"wildcard": {"LON": f"*{search}*"}},
+                        {"wildcard": {"HEALTHCARE_EXPENSES": f"*{search}*"}},
+                        {"wildcard": {"HEALTHCARE_COVERAGE": f"*{search}*"}},
+                        {"wildcard": {"INCOME": f"*{search}*"}}
+                    ]
                 }
             }
         }
